@@ -4,10 +4,13 @@ from collections import UserDict
 
 
 class AutoSysJob(UserDict):
+    r"""Regex pattern for matching job start comments
+    >>> re.match(AutoSysJob.job_start_regex, 'insert_job: FOO\n\nbar: baz').group(1)
+    'FOO'
+    """
 
     """Class that represents a job within AutoSys and its attributes"""
 
-    comments = ('/*', '#')
     default_attributes = {
         'insert_job': '',
         'job_type': '',
@@ -47,7 +50,8 @@ class AutoSysJob(UserDict):
     }
 
     job_name_comment = '/* ----------------- {} ----------------- */'
-    job_start_regex = '\\/\\*\\s*\\-*\\s*([a-zA-Z0-9\\.\\#_-]{1,64})\\s*\\-*\\s*\\*\\/'
+    job_start_regex = '\\s*insert_job\\s*:\\s*([a-zA-Z0-9\\.\\#_-]{1,64})\\s*'
+
 
     def __init__(self, job_name = ''):
         """Instantiates a new instance"""
@@ -97,17 +101,27 @@ class AutoSysJob(UserDict):
         # split lines and strip line if not empty
         lines = [line.strip() for line in jil.split('\n') if line.strip() != '']
 
+        multiline_comment_mode = False
         for line in lines:
             # check if line is a comment
-            if line.startswith(cls.comments):
+            if line.startswith('/*') or line.startswith('#'):
+                multiline_comment_mode = line.startswith('/*') and '*/' not in line
                 continue
-            # get the attribute:value pair
+
+            if multiline_comment_mode:
+                multiline_comment_mode = '*/' not in line
+                continue
+
+            # remove inline comments at the end of the line
+            line = re.sub(r"(/\*.+/*)", '', line).strip()
+
             try:
+                # get the attribute:value pair
                 attribute, value = line.split(':', 1)
-                job.attributes[attribute.strip()] = re.sub(r"(/\*.+/*)", '', value).strip()
+                job[attribute.strip()] = value.strip()
             except ValueError:
                 continue
 
-        job.job_name = job.attributes['insert_job']
+        job.job_name = job['insert_job']
 
         return job

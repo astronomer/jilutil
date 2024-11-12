@@ -10,7 +10,7 @@ class JilParser:
 
     """Class that parses JIL into jobs"""
 
-    job_comment = '/* -----------------'
+    job_key = 'insert_job'
 
     def __init__(self, path):
         """Instantiates a new instance"""
@@ -42,20 +42,24 @@ class JilParser:
         {'jobs': []}
         >>> JilParser(None).parse_jobs_from_str(None)
         {'jobs': []}
-        >>> val = '''\ninsert_job: TEST.ECHO
+        >>> JilParser(None).parse_jobs_from_str('''insert_job: TEST.ECHO
+        ... job_type: CMD
+        ...
+        ... insert_job: TEST.ECHO2
+        ... job_type: CMD''')
+        {'jobs': [{'insert_job': 'TEST.ECHO', 'job_type': 'CMD'}, {'insert_job': 'TEST.ECHO2', 'job_type': 'CMD'}]}
+        >>> JilParser(None).parse_jobs_from_str(r'''insert_job: TEST.ECHO
         ... job_type: CMD
         ... owner: waadm
         ... machine: orasvr19
-        ... command: echo "Hello World"'''
-        >>> JilParser(None).parse_jobs_from_str(val)
+        ... command: echo "Hello World"''')
         {'jobs': [{'insert_job': 'TEST.ECHO', 'job_type': 'CMD', 'owner': 'waadm', 'machine': 'orasvr19', 'command': 'echo "Hello World"'}]}
-        >>> val = '''insert_job: TEST.ECHO  job_type: CMD  /* INLINE COMMENT */
+        >>> JilParser(None).parse_jobs_from_str('''insert_job: TEST.ECHO  job_type: CMD  /* INLINE COMMENT */
         ... owner: waadm
         ... /* MULTILINE
         ...     COMMENT */
         ... machine: orasvr19
-        ... command: echo "Hello World"'''
-        >>> JilParser(None).parse_jobs_from_str(val)
+        ... command: echo "Hello World"''')
         {'jobs': [{'insert_job': 'TEST.ECHO', 'job_type': 'CMD', 'owner': 'waadm', 'machine': 'orasvr19', 'command': 'echo "Hello World"'}]}
 
         ```
@@ -71,24 +75,32 @@ class JilParser:
 
 
     def find_jobs(self, lines):
-        """Finds jobs from lines"""
+        """Finds jobs from lines
 
-        jobs = [[]]
+        >>> JilParser(None).find_jobs(['insert_job: TEST.ECHO   job_type: CMD', '', '', 'insert_job: TEST.ECHO2', 'job_type: CMD'])
+        [['insert_job: TEST.ECHO   job_type: CMD', '', ''], ['insert_job: TEST.ECHO2', 'job_type: CMD']]
+        """
+
+        jobs = []
         i = -1
 
+        has_found_job = False
         for line in lines:
             # check if the line contents indicate a new job
-            if line.startswith(self.job_comment):
+            if line.startswith(self.job_key):
+                has_found_job = True
                 # find job start match
                 matches = match(AutoSysJob.job_start_regex, line)
                 # if match found, create new list for job lines & increment number of jobs
                 if matches:
-                    jobs.append([])
+                    jobs.append([line])
                     i += 1
-            # is not a new job, add contents of line
-            else:
+            elif has_found_job:
+                # is not a new job, add contents of line
                 jobs[i].append(line)
-
+            else:
+                # if we haven't found anything yet...
+                continue
         return jobs
 
     def parse_jobs(self):

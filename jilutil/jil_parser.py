@@ -4,7 +4,7 @@ from __future__ import annotations
 from re import match
 from typing import Dict, List
 
-from jilutil.AutoSysJob import AutoSysJob
+from jilutil.auto_sys_job import AutoSysJob
 
 class JilParser:
 

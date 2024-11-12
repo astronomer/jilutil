@@ -85,7 +85,7 @@ class AutoSysJob(UserDict):
         return job_str
 
     @classmethod
-    def from_str(cls, jil):
+    def from_str(cls, jil: str):
         """Creates a new job from a string"""
 
         job = cls()

@@ -3,7 +3,7 @@
 from argparse import ArgumentParser
 from sys import exit
 
-from jilutil.jilutil import main
+from jilutil import main
 from jilutil.__init__ import __version__
 
 if __name__ == '__main__':
@@ -23,5 +23,5 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--verbose', action='store_true', help='Increases output verbosity.')
 
     parser.add_argument('--version', action='version', version=__version__)
-    
+
     exit(main(parser.parse_args()))

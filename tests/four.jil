@@ -1,0 +1,10 @@
+insert_job: EOD_post
+job_type: cmd
+machine: prod
+condition: success(EOD_watch)
+command: $HOME/POST
+
+insert_job: test_sample_04
+machine: localhost
+command: sleep 10
+condition: success(test_sample_01,12.00) AND failure(test_sample_02,24.00) AND success(test_sample_03)

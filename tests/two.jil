@@ -1,0 +1,17 @@
+insert_job:prodbackup
+machine:prod1
+owner:root
+command:/root/backup.sh
+date_conditions:1
+days_of_week:all
+start_times:"22:00"
+term_run_time:600
+
+insert_job:prodbackup
+machine:prod1
+owner:root
+command:/root/backup.sh && curl -sm 30 k.wdt.io/123abc/backupdb
+date_conditions:1
+days_of_week:all
+start_times:"22:00"
+term_run_time:600

@@ -1,0 +1,37 @@
+insert_job: TEST.ECHO
+job_type: CMD
+owner: waadm
+machine: orasvr19
+command: echo "Hello World"
+
+insert_job: ft_job
+job_type: FT
+owner: julian
+machine: unixagt
+watch_file: /PAYROL/payrol.input
+watch_file_type: EXIST
+
+insert_job: ft_job
+job_type: FT
+owner: julian
+machine: ftagt
+watch_file: "c:\data\monthly.log"
+watch_file_type: GENERATE
+watch_no_change: 2
+
+insert_job: fw_job
+job_type: FW
+owner: julian
+machine: winagent
+watch_file: "c:\tmp\watch_file.log"
+watch_file_min_size: 10000
+watch_interval: 90
+
+
+insert_job: TEST.ECHO.UNX.CD
+job_type: CMD
+owner: waadm
+machine: orasvr19
+command: echo "Simple Job Creation"
+std_out_file: /tmp/$AUTO_JOB_NAME.out
+std_err_file: /tmp/$AUTO_JOB_NAME.err

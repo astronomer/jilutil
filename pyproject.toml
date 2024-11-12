@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jilutil"
+version = "0.0.0"
+requires-python = ">= 3.9"
+license = {file = "LICENSE"}
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+
+    # package
+    "build",
+    "twine>=4.0.2",
+
+
+    # test
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "pytest-sugar>=0.9.7",
+
+    # lint
+    "ruff>=0.1.0",
+
+    # pre-commit
+    "pre-commit>=3.6.0; python_version >= '3.9'",
+    "detect-secrets>=1.4.0",
+]

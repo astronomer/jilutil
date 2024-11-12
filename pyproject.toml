@@ -32,6 +32,13 @@ dev = [
     "detect-secrets>=1.4.0",
 ]
 
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = []
+
+[tool.ruff]
+line-length = 120
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 norecursedirs = ["venv", "*.egg", ".eggs", "dist", "build", "docs", ".tox", ".git", "__pycache__"]

@@ -1,5 +1,3 @@
-import unittest
-
 from jilutil.AutoSysJob import AutoSysJob
 
 jil_box_job = """/* ----------------- SAMPLE_BOX_JOB ----------------- */
@@ -15,41 +13,34 @@ permission: gx,ge,wx,we,mx,me
 start_times: "20:00"
 """
 
-class TestAutoSysJob(unittest.TestCase):
+def test_from_str():
 
-    maxDiff = None
+    job = AutoSysJob.from_str(jil_box_job)
 
-    def test_from_str(self):
+    assert isinstance(job, AutoSysJob)
 
-        job = AutoSysJob.from_str(jil_box_job)
+    assert job['insert_job'] == 'SAMPLE_BOX_JOB'
+    assert job['job_type'] == 'BOX'
+    assert job['alarm_if_fail'] == '1'
+    assert job['date_conditions'] == '1'
+    assert job['days_of_week'] == 'su,mo,tu,we,th,fr,sa'
+    assert job['description'] == '"Sample box job"'
+    assert job['group'] == 'SOME_GROUP'
+    assert job['owner'] == 'root@domain'
+    assert job['permission'] == 'gx,ge,wx,we,mx,me'
+    assert job['start_times'] == '"20:00"'
 
-        self.assertIsInstance(job, AutoSysJob)
+def test_to_str(self):
 
-        self.assertEqual(job.attributes['insert_job'], 'SAMPLE_BOX_JOB')
-        self.assertEqual(job.attributes['job_type'], 'BOX')
-        self.assertEqual(job.attributes['alarm_if_fail'], '1')
-        self.assertEqual(job.attributes['date_conditions'], '1')
-        self.assertEqual(job.attributes['days_of_week'], 'su,mo,tu,we,th,fr,sa')
-        self.assertEqual(job.attributes['description'], '"Sample box job"')
-        self.assertEqual(job.attributes['group'], 'SOME_GROUP')
-        self.assertEqual(job.attributes['owner'], 'root@domain')
-        self.assertEqual(job.attributes['permission'], 'gx,ge,wx,we,mx,me')
-        self.assertEqual(job.attributes['start_times'], '"20:00"')
-    
-    def test_to_str(self):
+    job = AutoSysJob('SAMPLE_BOX_JOB')
+    job['job_type'] = 'BOX'
+    job['alarm_if_fail'] = '1'
+    job['date_conditions'] = '1'
+    job['days_of_week'] = 'su,mo,tu,we,th,fr,sa'
+    job['description'] = '"Sample box job"'
+    job['group'] = 'SOME_GROUP'
+    job['owner'] = 'root@domain'
+    job['permission'] = 'gx,ge,wx,we,mx,me'
+    job['start_times'] = '"20:00"'
 
-        job = AutoSysJob('SAMPLE_BOX_JOB')
-        job.attributes['job_type'] = 'BOX'
-        job.attributes['alarm_if_fail'] = '1'
-        job.attributes['date_conditions'] = '1'
-        job.attributes['days_of_week'] = 'su,mo,tu,we,th,fr,sa'
-        job.attributes['description'] = '"Sample box job"'
-        job.attributes['group'] = 'SOME_GROUP'
-        job.attributes['owner'] = 'root@domain'
-        job.attributes['permission'] = 'gx,ge,wx,we,mx,me'
-        job.attributes['start_times'] = '"20:00"'
-
-        self.assertEqual(str(job), jil_box_job)
-
-if __name__ == '__main__':
-    unittest.main()
+    assert str(job) == jil_box_job

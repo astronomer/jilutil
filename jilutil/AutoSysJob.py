@@ -1,6 +1,8 @@
 """AutoSys JIL Utility (https://github.com/mscribellito/JIL-Utility)"""
+from collections import UserDict
 
-class AutoSysJob:
+
+class AutoSysJob(UserDict):
 
     """Class that represents a job within AutoSys and its attributes"""
 
@@ -42,29 +44,27 @@ class AutoSysJob:
         'run_window': '',
         'term_run_time': ''
     }
-    
+
     job_name_comment = '/* ----------------- {} ----------------- */'
-    job_start_regex = '\\/\\*\\s*\\-*\\s*([a-zA-Z0-9\\.\\#_-]{1,64})\\s*\\-*\\s*\\*\\/'    
+    job_start_regex = '\\/\\*\\s*\\-*\\s*([a-zA-Z0-9\\.\\#_-]{1,64})\\s*\\-*\\s*\\*\\/'
 
     def __init__(self, job_name = ''):
         """Instantiates a new instance"""
 
+        super().__init__()
         self.job_name = job_name
-        
-        # assign default attributes
-        self._attributes = self.default_attributes.copy()
-        self._attributes['insert_job'] = job_name
-    
+        self.data['insert_job'] = job_name
+
     @property
     def attributes(self):
         """Returns attributes"""
 
-        return self._attributes
-    
-    def __repr__(self):
+        return self.data
+
+    def __str__(self):
         """Returns string representation"""
 
-        atts = self._attributes.copy()
+        atts = self.data.copy()
 
         # insert special job name in comment format
         job_str = self.job_name_comment.format(atts['insert_job']) + '\n\n'

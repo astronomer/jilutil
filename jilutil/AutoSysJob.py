@@ -1,4 +1,5 @@
 """AutoSys JIL Utility (https://github.com/mscribellito/JIL-Utility)"""
+import re
 from collections import UserDict
 
 
@@ -101,8 +102,11 @@ class AutoSysJob(UserDict):
             if line.startswith(cls.comments):
                 continue
             # get the attribute:value pair
-            attribute, value = line.split(':', 1)
-            job.attributes[attribute.strip()] = value.strip()
+            try:
+                attribute, value = line.split(':', 1)
+                job.attributes[attribute.strip()] = re.sub(r"(/\*.+/*)", '', value).strip()
+            except ValueError:
+                continue
 
         job.job_name = job.attributes['insert_job']
 

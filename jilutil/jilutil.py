@@ -4,21 +4,21 @@ import csv
 from datetime import datetime
 import os
 
-from .AutoSysJob import AutoSysJob
-from .JilParser import JilParser
+from jilutil.AutoSysJob import AutoSysJob
+from jilutil.JilParser import JilParser
 
 verbose = False
 
 def print_v(str):
     """Verbose printer"""
-    if verbose == True:
+    if verbose:
         print(str)
 
 def export(jobs, path, reversed):
     """Exports jobs contained in the JIL source file in ascending order by name to a CSV file."""
 
     file = '{} - {}.csv'.format(os.path.splitext(path)[0], datetime.now().strftime("%Y%m%d_%H%M%S"))
-    
+
     jobs.sort(key=lambda x: x.job_name, reverse=reversed)
 
     with open(file, 'w', newline='') as csv_file:
@@ -40,7 +40,7 @@ def export(jobs, path, reversed):
 def format(jobs, path, new, reversed):
     """Formats jobs contained in the JIL source file in ascending order by name."""
 
-    if new == True:
+    if new:
         file = '{} - {}.jil'.format(os.path.splitext(path)[0], datetime.now().strftime("%Y%m%d_%H%M%S"))
     else:
         file = path
@@ -61,7 +61,7 @@ def output(jobs, attributes, reversed):
 
     if attributes is not None:
         attributes = [attribute.strip() for attribute in attributes.split(',') if attribute.strip() != '' and attribute in AutoSysJob.default_attributes]
-    
+
     for job in jobs:
 
         extra = []
@@ -71,7 +71,7 @@ def output(jobs, attributes, reversed):
         if attributes is not None:
             for attribute in attributes:
                 extra.append('{}: {}'.format(attribute, job.attributes[attribute]))
-            
+
             if len(extra) > 0:
                 print(' -> ', end='')
                 print(' ; '.join(extra), end='')
@@ -82,7 +82,7 @@ def main(args):
 
     global verbose
     verbose = args.verbose
-    
+
     try:
 
         jil_parser = JilParser(args.path)
@@ -91,14 +91,14 @@ def main(args):
         print_v('{} jobs parsed'.format(len(jobs)))
 
         if args.export:
-            export(jobs, args.path, args.reverse)        
+            export(jobs, args.path, args.reverse)
         elif args.format:
-            format(jobs, args.path, args.new, args.reverse)        
+            format(jobs, args.path, args.new, args.reverse)
         elif args.output:
             output(jobs, args.attributes, args.reverse)
 
     except Exception as e:
         print(e)
         return 1
-    
+
     return 0

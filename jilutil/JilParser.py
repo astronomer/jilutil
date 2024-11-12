@@ -1,8 +1,10 @@
 """AutoSys JIL Utility (https://github.com/mscribellito/JIL-Utility)"""
+from __future__ import annotations
 
 from re import match
+from typing import Dict, List
 
-from .AutoSysJob import AutoSysJob
+from jilutil.AutoSysJob import AutoSysJob
 
 class JilParser:
 
@@ -29,16 +31,52 @@ class JilParser:
                 if not line:
                     continue
                 lines.append(line.strip())
-        
+
         return lines
+
+    def parse_jobs_from_str(self, input_str: str | None) -> Dict[str, List[AutoSysJob]]:
+        r"""Read directly from a multiline JIL string and return a dictionary like {'jobs': [AutoSysJob, ...]}
+
+        ```pycon
+        >>> JilParser(None).parse_jobs_from_str('')
+        {'jobs': []}
+        >>> JilParser(None).parse_jobs_from_str(None)
+        {'jobs': []}
+        >>> val = '''\ninsert_job: TEST.ECHO
+        ... job_type: CMD
+        ... owner: waadm
+        ... machine: orasvr19
+        ... command: echo "Hello World"'''
+        >>> JilParser(None).parse_jobs_from_str(val)
+        {'jobs': [{'insert_job': 'TEST.ECHO', 'job_type': 'CMD', 'owner': 'waadm', 'machine': 'orasvr19', 'command': 'echo "Hello World"'}]}
+        >>> val = '''insert_job: TEST.ECHO  job_type: CMD  /* INLINE COMMENT */
+        ... owner: waadm
+        ... /* MULTILINE
+        ...     COMMENT */
+        ... machine: orasvr19
+        ... command: echo "Hello World"'''
+        >>> JilParser(None).parse_jobs_from_str(val)
+        {'jobs': [{'insert_job': 'TEST.ECHO', 'job_type': 'CMD', 'owner': 'waadm', 'machine': 'orasvr19', 'command': 'echo "Hello World"'}]}
+
+        ```
+        """
+        output = {"jobs": []}
+        if not input_str:
+            return output
+
+        jobs = self.find_jobs(input_str.splitlines())
+        if parsed_jobs := [AutoSysJob.from_str('\n'.join(job)) for job in jobs]:
+            output['jobs'] = parsed_jobs
+        return output
+
 
     def find_jobs(self, lines):
         """Finds jobs from lines"""
 
-        jobs = []
+        jobs = [[]]
         i = -1
 
-        for line in lines:            
+        for line in lines:
             # check if the line contents indicate a new job
             if line.startswith(self.job_comment):
                 # find job start match
@@ -50,9 +88,9 @@ class JilParser:
             # is not a new job, add contents of line
             else:
                 jobs[i].append(line)
-        
+
         return jobs
-    
+
     def parse_jobs(self):
         """Parses jobs from JIL"""
 
@@ -64,5 +102,5 @@ class JilParser:
             # create new job from list of strings
             job = AutoSysJob.from_str('\n'.join(definition))
             parsed_jobs.append(job)
-        
+
         return parsed_jobs

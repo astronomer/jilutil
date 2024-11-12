@@ -30,7 +30,7 @@ def test_from_str():
     assert job['permission'] == 'gx,ge,wx,we,mx,me'
     assert job['start_times'] == '"20:00"'
 
-def test_to_str(self):
+def test_to_str():
 
     job = AutoSysJob('SAMPLE_BOX_JOB')
     job['job_type'] = 'BOX'

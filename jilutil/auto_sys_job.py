@@ -46,7 +46,18 @@ class AutoSysJob(UserDict):
         'priority': '',
         'profile': '',
         'run_window': '',
-        'term_run_time': ''
+        'term_run_time': '',
+        'start_mins': '',
+        'run_calendar': '',
+        'timezone': '',
+        'must_start_times': '',
+        'watch_file': '',
+        'envvars': '',
+        'notification_id': '',
+        'watch_file_min_size': '',
+        'watch_file_type': '',
+        'watch_interval': '',
+        'svcdesk_desc': ''
     }
 
     job_name_comment = '/* ----------------- {} ----------------- */'

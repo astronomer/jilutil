@@ -11,55 +11,6 @@ class AutoSysJob(UserDict):
 
     """Class that represents a job within AutoSys and its attributes"""
 
-    default_attributes = {
-        'insert_job': '',
-        'job_type': '',
-        'box_name': '',
-        'command': '',
-        'machine': '',
-        'owner': '',
-        'permission': '',
-        'date_conditions': '',
-        'days_of_week': '',
-        'start_times': '',
-        'condition': '',
-        'description': '',
-        'std_out_file': '',
-        'std_err_file': '',
-        'alarm_if_fail': '',
-        'group': '',
-        'application': '',
-        'send_notification': '',
-        'notification_msg': '',
-        'success_codes': '',
-        'notification_emailaddress': '',
-        'auto_delete': '',
-        'box_terminator': '',
-        'chk_files': '',
-        'exclude_calendar': '',
-        'job_load': '',
-        'job_terminator': '',
-        'max_exit_status': '',
-        'max_run_alarm': '',
-        'min_run_alarm': '',
-        'n_retrys': '',
-        'priority': '',
-        'profile': '',
-        'run_window': '',
-        'term_run_time': '',
-        'start_mins': '',
-        'run_calendar': '',
-        'timezone': '',
-        'must_start_times': '',
-        'watch_file': '',
-        'envvars': '',
-        'notification_id': '',
-        'watch_file_min_size': '',
-        'watch_file_type': '',
-        'watch_interval': '',
-        'svcdesk_desc': ''
-    }
-
     job_name_comment = '/* ----------------- {} ----------------- */'
     job_start_regex = '\\s*insert_job\\s*:\\s*([a-zA-Z0-9\\.\\#_-]{1,64})\\s*'
 

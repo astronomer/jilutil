@@ -32,12 +32,13 @@ class AutoSysJob(UserDict):
         """Returns string representation"""
 
         atts = self.data.copy()
+        print(f"atts: {atts}")
 
         # insert special job name in comment format
         job_str = self.job_name_comment.format(atts['insert_job']) + '\n\n'
 
         # add special insert_job & job_type attributes
-        breakpoint()
+        print(f"job_str:"{job_str})
         job_str += 'insert_job: {}   job_type: {}\n'.format(atts['insert_job'], atts['job_type'])
         del atts['insert_job']
         del atts['job_type']

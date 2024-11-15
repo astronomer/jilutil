@@ -6,7 +6,7 @@ import csv
 import os
 from datetime import datetime
 
-from jil_parser import JilParser
+from .jil_parser import JilParser
 from jilutil.auto_sys_job import AutoSysJob
 
 verbose = False

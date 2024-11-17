@@ -76,6 +76,9 @@ class JilParser:
             return field
 
         if parsed_jobs := [AutoSysJob.from_str("\n".join(job)) for job in jobs]:
+            for job in parsed_jobs:
+                for k, v in job.items():
+                    job[k] = clean_escape_chars(v)
             output["jobs"] = parsed_jobs
         return output
 

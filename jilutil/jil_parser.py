@@ -70,15 +70,7 @@ class JilParser:
 
         jobs = self.find_jobs(input_str.splitlines())
 
-        def clean_escape_chars(field):
-            if isinstance(field, str):
-                return field.replace("\\\\", "\\")
-            return field
-
         if parsed_jobs := [AutoSysJob.from_str("\n".join(job)) for job in jobs]:
-            for job in parsed_jobs:
-                for k, v in job.items():
-                    job[k] = clean_escape_chars(v)
             output["jobs"] = parsed_jobs
         return output
 

@@ -1,4 +1,5 @@
 """AutoSys JIL Utility (https://github.com/mscribellito/JIL-Utility)"""
+
 from __future__ import annotations
 
 from re import match
@@ -7,10 +8,9 @@ from typing import Dict, List
 from jilutil.auto_sys_job import AutoSysJob
 
 class JilParser:
-
     """Class that parses JIL into jobs"""
 
-    job_key = 'insert_job'
+    job_key = "insert_job"
 
     def __init__(self, path):
         """Instantiates a new instance"""
@@ -23,7 +23,7 @@ class JilParser:
         # list of trimmed & not empty lines in file
         lines = []
 
-        with open(self.path, 'r') as f:
+        with open(self.path, "r") as f:
             for line in f:
                 # remove leading & trailing whitespace
                 line = line.strip()
@@ -68,18 +68,16 @@ class JilParser:
         if not input_str:
             return output
 
+        jobs = self.find_jobs(input_str.splitlines())
+
         def clean_escape_chars(field):
             if isinstance(field, str):
-                return field.replace("\\\\", "\\").replace('\"', "")
+                return field.replace("\\\\", "\\")
             return field
-        jobs = self.find_jobs(input_str.splitlines())
-        for job in jobs:
-            for key, value in job.items():
-                job[key] = clean_escape_chars(value)
-        if parsed_jobs := [AutoSysJob.from_str('\n'.join(job)) for job in jobs]:
-            output['jobs'] = parsed_jobs
-        return output
 
+        if parsed_jobs := [AutoSysJob.from_str("\n".join(job)) for job in jobs]:
+            output["jobs"] = parsed_jobs
+        return output
 
     def find_jobs(self, lines):
         """Finds jobs from lines
@@ -119,7 +117,7 @@ class JilParser:
 
         for definition in raw_jobs:
             # create new job from list of strings
-            job = AutoSysJob.from_str('\n'.join(definition))
+            job = AutoSysJob.from_str("\n".join(definition))
             parsed_jobs.append(job)
 
         return parsed_jobs

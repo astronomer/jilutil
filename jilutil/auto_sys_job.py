@@ -37,8 +37,9 @@ class AutoSysJob(UserDict):
         job_str = self.job_name_comment.format(atts['insert_job']) + '\n\n'
 
         # add special insert_job & job_type attributes
-        job_str += 'insert_job: {}'.format(atts['insert_job'])
+        job_str += 'insert_job: {}   job_type: {}\n'.format(atts['insert_job'], atts['job_type'])
         del atts['insert_job']
+        del atts['job_type']
 
         # iterate over attribute:value pairs in alphabetical order
         for attribute, value in sorted(atts.items()):

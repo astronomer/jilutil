@@ -89,9 +89,24 @@ class AutoSysJob(UserDict):
 
     @classmethod
     def from_str(cls, jil: str):
-        """Creates a new job from a string"""
+        r"""Creates a new AutoSysJob from a string
+
+        ```pycon
+        >>> AutoSysJob.from_str('')
+        {'insert_job': ''}
+        >>> AutoSysJob.from_str(None)
+        {'insert_job': ''}
+        >>> AutoSysJob.from_str('insert_job: TEST.ECHO   job_type: BOX \n')
+        {'insert_job': 'TEST.ECHO', 'job_type': 'BOX'}
+        >>> AutoSysJob.from_str('insert_job: TEST.ECHO \n repeated_field: value \n repeated_field: value')
+        {'insert_job': 'TEST.ECHO', 'repeated_field': ['value', 'value']}
         
+        ```
+        """
         job = cls()
+
+        if not jil:
+            return job
 
         # force job_type onto a new line
         jil = jil.replace('job_type', '\njob_type', 1)

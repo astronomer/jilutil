@@ -91,6 +91,8 @@ class AutoSysJob(UserDict):
     @classmethod
     def from_str(cls, jil: str):
         """Creates a new job from a string"""
+        
+        NOTIFICATION_EMAILADDRESS = "notification_emailaddress"
 
         job = cls()
 
@@ -102,6 +104,7 @@ class AutoSysJob(UserDict):
         lines = [line.strip() for line in jil.split('\n') if line.strip() != '']
 
         multiline_comment_mode = False
+        email_address_list = []
         for line in lines:
             # check if line is a comment
             if line.startswith('/*') or line.startswith('#'):
@@ -118,10 +121,14 @@ class AutoSysJob(UserDict):
             try:
                 # get the attribute:value pair
                 attribute, value = line.split(':', 1)
-                job[attribute.strip()] = value.strip()
+                if attribute == NOTIFICATION_EMAILADDRESS:
+                    email_address_list.append(value)
+                else:
+                    job[attribute.strip()] = value.strip()
             except ValueError:
                 continue
-
+            
+        job[NOTIFICATION_EMAILADDRESS] = email_address_list
         job.job_name = job['insert_job']
 
         return job

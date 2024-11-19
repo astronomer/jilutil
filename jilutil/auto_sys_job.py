@@ -122,11 +122,12 @@ class AutoSysJob(UserDict):
             except ValueError:
                 continue
 
-        job = {
+        attribute_to_values = {
             k: v if len(v) > 1 else v[0]
             for k, v in attribute_to_values.items()
         }
-
-        job["job_name"] = job['insert_job']
+        
+        job.update(attribute_to_values)
+        job.job_name = job['insert_job']
 
         return job

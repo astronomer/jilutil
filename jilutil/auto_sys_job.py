@@ -75,9 +75,8 @@ class AutoSysJob(UserDict):
         job_str = self.job_name_comment.format(atts['insert_job']) + '\n\n'
 
         # add special insert_job & job_type attributes
-        job_str += 'insert_job: {}   job_type: {}\n'.format(atts['insert_job'], atts['job_type'])
+        job_str += 'insert_job: {}'.format(atts['insert_job'])
         del atts['insert_job']
-        del atts['job_type']
 
         # iterate over attribute:value pairs in alphabetical order
         for attribute, value in sorted(atts.items()):
@@ -90,9 +89,24 @@ class AutoSysJob(UserDict):
 
     @classmethod
     def from_str(cls, jil: str):
-        """Creates a new job from a string"""
+        r"""Creates a new AutoSysJob from a string
 
+        ```pycon
+        >>> AutoSysJob.from_str('')
+        {'insert_job': ''}
+        >>> AutoSysJob.from_str(None)
+        {'insert_job': ''}
+        >>> AutoSysJob.from_str('insert_job: TEST.ECHO   job_type: BOX \n')
+        {'insert_job': 'TEST.ECHO', 'job_type': 'BOX'}
+        >>> AutoSysJob.from_str('insert_job: TEST.ECHO \n repeated_field: value \n repeated_field: value')
+        {'insert_job': 'TEST.ECHO', 'repeated_field': ['value', 'value']}
+        
+        ```
+        """
         job = cls()
+
+        if not jil:
+            return job
 
         # force job_type onto a new line
         jil = jil.replace('job_type', '\njob_type', 1)
@@ -102,6 +116,7 @@ class AutoSysJob(UserDict):
         lines = [line.strip() for line in jil.split('\n') if line.strip() != '']
 
         multiline_comment_mode = False
+        attribute_to_values = {}
         for line in lines:
             # check if line is a comment
             if line.startswith('/*') or line.startswith('#'):
@@ -118,10 +133,16 @@ class AutoSysJob(UserDict):
             try:
                 # get the attribute:value pair
                 attribute, value = line.split(':', 1)
-                job[attribute.strip()] = value.strip()
+                attribute_to_values.setdefault(attribute.strip(), []).append(value.strip())
             except ValueError:
                 continue
 
+        attribute_to_values = {
+            k: v if len(v) > 1 else v[0]
+            for k, v in attribute_to_values.items()
+        }
+        
+        job.update(attribute_to_values)
         job.job_name = job['insert_job']
 
         return job

@@ -100,7 +100,11 @@ class AutoSysJob(UserDict):
         {'insert_job': 'TEST.ECHO', 'job_type': 'BOX'}
         >>> AutoSysJob.from_str('insert_job: TEST.ECHO \n repeated_field: value \n repeated_field: value')
         {'insert_job': 'TEST.ECHO', 'repeated_field': ['value', 'value']}
-        
+        >>> AutoSysJob.from_str("insert_job: TEST.ECHO \n foo: bar 'baz' \n bop: 'qux'")
+        {'insert_job': 'TEST.ECHO', 'foo': "bar 'baz'", 'bop': 'qux'}
+        >>> AutoSysJob.from_str('insert_job: TEST.ECHO \n foo: bar "baz" \n bop: "qux"')
+        {'insert_job': 'TEST.ECHO', 'foo': 'bar "baz"', 'bop': 'qux'}
+
         ```
         """
         job = cls()
@@ -133,7 +137,14 @@ class AutoSysJob(UserDict):
             try:
                 # get the attribute:value pair
                 attribute, value = line.split(':', 1)
-                attribute_to_values.setdefault(attribute.strip(), []).append(value.strip())
+                attribute = attribute.strip()
+                value = value.strip()
+
+                # remove single or double quotes if the whole string is wrapped with them
+                if isinstance(value, str) and value[0] in ('"', "'") and value[-1] in ('"', "'"):
+                    value = value[1:-1]
+
+                attribute_to_values.setdefault(attribute, []).append(value)
             except ValueError:
                 continue
 
@@ -141,7 +152,7 @@ class AutoSysJob(UserDict):
             k: v if len(v) > 1 else v[0]
             for k, v in attribute_to_values.items()
         }
-        
+
         job.update(attribute_to_values)
         job.job_name = job['insert_job']
 

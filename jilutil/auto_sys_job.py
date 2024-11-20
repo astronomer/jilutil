@@ -104,6 +104,8 @@ class AutoSysJob(UserDict):
         {'insert_job': 'TEST.ECHO', 'foo': "bar 'baz'", 'bop': 'qux'}
         >>> AutoSysJob.from_str('insert_job: TEST.ECHO \n foo: bar "baz" \n bop: "qux"')
         {'insert_job': 'TEST.ECHO', 'foo': 'bar "baz"', 'bop': 'qux'}
+        >>> AutoSysJob.from_str('''insert_job: TEST.ECHO \n foo: "bar" "baz" \n bop: "qux 'bonk'"''')
+        {'insert_job': 'TEST.ECHO', 'foo': '"bar" "baz"', 'bop': "qux 'bonk'"}
 
         ```
         """
@@ -141,7 +143,11 @@ class AutoSysJob(UserDict):
                 value = value.strip()
 
                 # remove single or double quotes if the whole string is wrapped with them
-                if isinstance(value, str) and value[0] in ('"', "'") and value[-1] in ('"', "'"):
+                if (
+                    isinstance(value, str)
+                    and (value[0] in ('"', "'") and value[-1] in ('"', "'"))
+                    and (value.count('"') == 2 or value.count("'") == 2)
+                ):
                     value = value[1:-1]
 
                 attribute_to_values.setdefault(attribute, []).append(value)

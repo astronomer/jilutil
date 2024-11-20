@@ -4,12 +4,12 @@ from collections import UserDict
 
 
 class AutoSysJob(UserDict):
-    r"""Regex pattern for matching job start comments
+    r"""Class that represents a job within AutoSys and its attributes
+
+    Regex pattern for matching job start line:
     >>> re.match(AutoSysJob.job_start_regex, 'insert_job: FOO\n\nbar: baz').group(1)
     'FOO'
     """
-
-    """Class that represents a job within AutoSys and its attributes"""
 
     default_attributes = {
         'insert_job': '',

@@ -1,4 +1,4 @@
-from jil_parser import JilParser
+from jilutil.jil_parser import JilParser
 
 
 def test_jil_parser_parse_jobs_from_str(project_root):
@@ -31,7 +31,7 @@ def test_jil_parser_parse_jobs_from_str_one_dot_jil(project_root):
         'job_type': 'FT',
         'machine': 'ftagt',
         'owner': 'julian',
-        'watch_file': '"c:\\data\\monthly.log"',
+        'watch_file': r'c:\data\monthly.log',
         'watch_file_type': 'GENERATE',
         'watch_no_change': '2'
     }, {
@@ -39,7 +39,7 @@ def test_jil_parser_parse_jobs_from_str_one_dot_jil(project_root):
         'job_type': 'FW',
         'machine': 'winagent',
         'owner': 'julian',
-        'watch_file': '"c:\\tmp\\watch_file.log"',
+        'watch_file': r'c:\tmp\watch_file.log',
         'watch_file_min_size': '10000',
         'watch_interval': '90'
     }, {
@@ -64,7 +64,7 @@ def test_jil_parser_parse_jobs_from_str_two_dot_jil(project_root):
         'insert_job': 'prodbackup',
         'machine': 'prod1',
         'owner': 'root',
-        'start_times': '"22:00"',
+        'start_times': '22:00',
         'term_run_time': '600'
     }, {
         'command': '/root/backup.sh && curl -sm 30 k.wdt.io/123abc/backupdb',
@@ -73,7 +73,7 @@ def test_jil_parser_parse_jobs_from_str_two_dot_jil(project_root):
         'insert_job': 'prodbackup',
         'machine': 'prod1',
         'owner': 'root',
-        'start_times': '"22:00"',
+        'start_times': '22:00',
         'term_run_time': '600'
     }]}
 
@@ -87,7 +87,7 @@ def test_jil_parser_parse_jobs_from_str_three_dot_jil(project_root):
         'command': '/path/to/watch_done_file.sh',
         'date_conditions': 'y',
         'days_of_week': 'all',
-        'description': '"Watch for .done file arrival"',
+        'description': 'Watch for .done file arrival',
         'insert_job': 'WATCH_DONE_FILE',
         'job_type': 'CMD',
         'machine': 'hostname',
@@ -95,7 +95,7 @@ def test_jil_parser_parse_jobs_from_str_three_dot_jil(project_root):
         'owner': 'autosys_user',
         'permission': 'gx,ge,wx',
         'profile': '/home/autosys_user/.profile',
-        'start_times': '"00:00"',
+        'start_times': '00:00',
         'std_err_file': '/path/to/logs/WATCH_DONE_FILE.err',
         'std_out_file': '/path/to/logs/WATCH_DONE_FILE.out'
     }]}

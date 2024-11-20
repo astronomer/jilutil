@@ -4,12 +4,12 @@ from collections import UserDict
 
 
 class AutoSysJob(UserDict):
-    r"""Regex pattern for matching job start comments
+    r"""Class that represents a job within AutoSys and its attributes
+
+    Regex pattern for matching job start line:
     >>> re.match(AutoSysJob.job_start_regex, 'insert_job: FOO\n\nbar: baz').group(1)
     'FOO'
     """
-
-    """Class that represents a job within AutoSys and its attributes"""
 
     default_attributes = {
         'insert_job': '',
@@ -75,7 +75,7 @@ class AutoSysJob(UserDict):
         job_str = self.job_name_comment.format(atts['insert_job']) + '\n\n'
 
         # add special insert_job & job_type attributes
-        job_str += 'insert_job: {}'.format(atts['insert_job'])
+        job_str += 'insert_job: {}\n'.format(atts['insert_job'])
         del atts['insert_job']
 
         # iterate over attribute:value pairs in alphabetical order
@@ -100,7 +100,13 @@ class AutoSysJob(UserDict):
         {'insert_job': 'TEST.ECHO', 'job_type': 'BOX'}
         >>> AutoSysJob.from_str('insert_job: TEST.ECHO \n repeated_field: value \n repeated_field: value')
         {'insert_job': 'TEST.ECHO', 'repeated_field': ['value', 'value']}
-        
+        >>> AutoSysJob.from_str("insert_job: TEST.ECHO \n foo: bar 'baz' \n bop: 'qux'")
+        {'insert_job': 'TEST.ECHO', 'foo': "bar 'baz'", 'bop': 'qux'}
+        >>> AutoSysJob.from_str('insert_job: TEST.ECHO \n foo: bar "baz" \n bop: "qux"')
+        {'insert_job': 'TEST.ECHO', 'foo': 'bar "baz"', 'bop': 'qux'}
+        >>> AutoSysJob.from_str('''insert_job: TEST.ECHO \n foo: "bar" "baz" \n bop: "qux 'bonk'"''')
+        {'insert_job': 'TEST.ECHO', 'foo': '"bar" "baz"', 'bop': "qux 'bonk'"}
+
         ```
         """
         job = cls()
@@ -133,7 +139,18 @@ class AutoSysJob(UserDict):
             try:
                 # get the attribute:value pair
                 attribute, value = line.split(':', 1)
-                attribute_to_values.setdefault(attribute.strip(), []).append(value.strip())
+                attribute = attribute.strip()
+                value = value.strip()
+
+                # remove single or double quotes if the whole string is wrapped with them
+                if (
+                    isinstance(value, str)
+                    and (value[0] in ('"', "'") and value[-1] in ('"', "'"))
+                    and (value.count('"') == 2 or value.count("'") == 2)
+                ):
+                    value = value[1:-1]
+
+                attribute_to_values.setdefault(attribute, []).append(value)
             except ValueError:
                 continue
 
@@ -141,7 +158,7 @@ class AutoSysJob(UserDict):
             k: v if len(v) > 1 else v[0]
             for k, v in attribute_to_values.items()
         }
-        
+
         job.update(attribute_to_values)
         job.job_name = job['insert_job']
 

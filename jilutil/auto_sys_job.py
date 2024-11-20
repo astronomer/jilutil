@@ -106,6 +106,8 @@ class AutoSysJob(UserDict):
         {'insert_job': 'TEST.ECHO', 'foo': 'bar "baz"', 'bop': 'qux'}
         >>> AutoSysJob.from_str('''insert_job: TEST.ECHO \n foo: "bar" "baz" \n bop: "qux 'bonk'"''')
         {'insert_job': 'TEST.ECHO', 'foo': '"bar" "baz"', 'bop': "qux 'bonk'"}
+        >>> AutoSysJob.from_str('insert_job: TEST.ECHO \n foo: \n bop: "qux"')
+        {'insert_job': 'TEST.ECHO', 'foo': '', 'bop': 'qux'}
 
         ```
         """
@@ -144,7 +146,7 @@ class AutoSysJob(UserDict):
 
                 # remove single or double quotes if the whole string is wrapped with them
                 if (
-                    isinstance(value, str)
+                    isinstance(value, str) and value
                     and (value[0] in ('"', "'") and value[-1] in ('"', "'"))
                     and (value.count('"') == 2 or value.count("'") == 2)
                 ):

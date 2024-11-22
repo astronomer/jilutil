@@ -32,9 +32,6 @@ class UnionFind:
     def connected(self, x, y):
         return self.find(x) == self.find(y)
 
-def filter_marked_for_migration_tasks(jobs, migration_list):
-    print(jobs)
-
 def create_empty_task(task_name, job_type):
     job = AutoSysJob(task_name)
     job.data["status"] = "DISABLED"
@@ -76,12 +73,12 @@ for job in filtered_jobs:
         job["condition_array"] = extract_condition_job_names(job.get("condition"))
 
 # join jobs linked by conditions or boxes into the same set
-uf_set = UnionFind(len(parsed_jobs["jobs"])+1000)
+uf_set = UnionFind(len(filtered_jobs)+100)
 for job in filtered_jobs:
     job_id = job_id_dict[job.get("insert_job")]
 
-    if job.get("condition_array"):
-        for condition_task in job.get("condition_array"):
+    if condition_array := job.get("condition_array"):
+        for condition_task in condition_array:
             # add an empty task for tasks missing in dump
             if condition_task not in job_id_dict:
                 condition_task_id = max(job_id_dict.values()) + 1
@@ -92,8 +89,7 @@ for job in filtered_jobs:
 
             uf_set.union(job_id, condition_task_id)
 
-    if job.get("box_name"):
-        box_name = job.get("box_name")
+    if box_name := job.get("box_name"):
         box_job_id = job_id_dict[job.get("box_name")]
         uf_set.union(job_id, box_job_id)
 
@@ -118,9 +114,22 @@ for (dag_id, dag_data) in dag_dict.items():
     file = f"dags/{sub_folder}/dag_{i}.jil"
     with open(file, 'w') as f:
         for job in dag_data:
-            f.write(str(job) + '\n')
+            if "condition_array" in job:
+                del job["condition_array"]
+            f.write(f"/* ----------------- {job['insert_job']} ----------------- */ \n \n")
+            for attribute, value in job.items():
+                if isinstance(value,list):
+                    for v in value:
+                        f.write(f"{str(attribute)}: {v} \n")
+                else:
+                    f.write(f"{str(attribute)}: {value} \n")
+            f.write("\n \n")
     with open("task_to_id.csv", 'a') as f:
         for job in dag_data:
-            f.write(f"{i},{job['insert_job']}" + '\n')
+            if len(dag_data) > 1:
+                job_type = "MULTI TASK"
+            else:
+                job_type = job["job_type"]
+            f.write(f"{i},{job['insert_job']},{job_type}" + '\n')
 
     i += 1

@@ -1,7 +1,5 @@
 """AutoSys JIL Utility (https://github.com/mscribellito/JIL-Utility)"""
 
-__version__ = '0.2.0'
-
 import csv
 import os
 from datetime import datetime
@@ -11,6 +9,8 @@ from .auto_sys_job import AutoSysJob
 
 verbose = False
 
+__version__ = '0.3.0'
+version = __version__
 
 def print_v(str):
     """Verbose printer"""

@@ -1,3 +1,6 @@
+> **Note**
+This repository has been forked from https://github.com/mscribellito/jilutil, and credit is given to the original author.
+
 # JIL Utility
 AutoSys JIL command line utility
 
@@ -5,6 +8,8 @@ This utility provides functionality to:
 * **Export to CSV** - makes jobs easier to read for non-technical people
 * **Format JIL** - aids in comparison of jobs in different environments
 * **Output to console** - allows quick inspection of jobs contained within
+
+Additionally, the functionality to parse JIL files is provided as a library.
 
 ## What is JIL?
 Job Information Language (JIL) is a scripting language that lets you define and modify assets such as jobs, global variables, machines, job types, external instances, and blobs.
